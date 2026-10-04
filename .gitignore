@@ -1,0 +1,15 @@
+# OS cruft
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# editor / tooling
+.vscode/
+.idea/
+*.swp
+
+# local dev server config (machine-specific paths)
+.claude/launch.json
+
+# node, if tooling ever gets added here
+node_modules/

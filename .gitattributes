@@ -1,0 +1,25 @@
+# Normalise to LF in the repository. This is a deployable static site, so the
+# files that land on the server should be byte-identical whatever machine they
+# were checked out on.
+* text=auto eol=lf
+
+# Server config and web assets: always LF, never CRLF.
+.htaccess   text eol=lf
+*.html      text eol=lf
+*.css       text eol=lf
+*.js        text eol=lf
+*.svg       text eol=lf
+*.txt       text eol=lf
+*.md        text eol=lf
+
+# Binary — never touch these.
+*.webp      binary
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.avif      binary
+*.mp4       binary
+*.ttf       binary
+*.woff      binary
+*.woff2     binary
+*.pdf       binary

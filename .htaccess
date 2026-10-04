@@ -1,0 +1,71 @@
+# Apache 2.4: allow extensionless page URLs and disable content negotiation.
+Options -MultiViews
+DirectoryIndex index.html
+
+# --- Staging: keep dev.sahyadrifarms.com out of search results -------------
+# Scoped to the dev hostname on purpose, so this same file stays safe to
+# deploy to the production host — there it does nothing.
+#
+# This is a header rather than a robots.txt "Disallow" because the two do
+# different jobs: Disallow blocks CRAWLING, which stops a crawler from ever
+# fetching the page and therefore from ever seeing a noindex. Crawling is
+# deliberately left allowed so the noindex below is actually read and obeyed.
+# A header also covers non-HTML files (the PDFs under /assets), which a
+# <meta name="robots"> tag cannot.
+SetEnvIf Host "^dev\.sahyadrifarms\.com(:[0-9]+)?$" STAGING_HOST
+<IfModule mod_headers.c>
+  Header always set X-Robots-Tag "noindex, nofollow, noarchive, nosnippet, noimageindex" env=STAGING_HOST
+</IfModule>
+
+# Stronger option: require a password, so crawlers get a 401 and never see
+# any content at all. Enable only when the site no longer needs to be open
+# for review — it locks out everyone without the credentials.
+#   1. Create the password file OUTSIDE the web root:
+#        htpasswd -c /home/<account>/.htpasswd review
+#   2. Uncomment the five lines below and correct AuthUserFile to that path.
+#
+# <If "%{HTTP_HOST} == 'dev.sahyadrifarms.com'">
+#   AuthType Basic
+#   AuthName "Sahyadri Farms - staging"
+#   AuthUserFile /home/<account>/.htpasswd
+#   Require valid-user
+# </If>
+
+RewriteEngine On
+
+# Redirect browser requests for index.html to the containing directory.
+# THE_REQUEST prevents internal .html rewrites from causing redirect loops.
+RewriteCond %{REQUEST_METHOD} ^(?:GET|HEAD)$
+RewriteCond %{THE_REQUEST} \s/+[^?\s]*index\.html(?:[?\s]) [NC]
+RewriteRule ^(.*)index\.html$ /$1 [R=301,L,NE]
+
+# Redirect explicit .html URLs to their canonical, extensionless URLs.
+RewriteCond %{REQUEST_METHOD} ^(?:GET|HEAD)$
+RewriteCond %{THE_REQUEST} \s/+[^?\s]+\.html(?:[?\s]) [NC]
+RewriteRule ^(.+)\.html$ /$1 [R=301,L,NE]
+
+RewriteRule ^index/?$ / [R=301,L]
+
+# Keep the Bio-Actives overview at its file-level URL so relative assets
+# resolve consistently alongside its child-page directory.
+RewriteRule ^bio-actives/$ /bio-actives [R=301,L]
+RewriteRule ^bio-actives$ bio-actives.html [END]
+
+# A landing page can share its name with a directory containing child pages.
+# For example, /pr-media/ must serve pr-media.html, not list pr-media/.
+# Match this before the directory bypass below. Keep DirectorySlash enabled.
+RewriteCond "%{DOCUMENT_ROOT}/$1.html" -f
+RewriteRule ^(.+)/$ $1.html [END]
+
+# Page URLs have no trailing slash; actual directories keep theirs.
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+)/$ /$1 [R=301,L,NE]
+
+# Leave real files and directories (including assets and PDFs) untouched.
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Serve the matching HTML file without changing the browser's URL.
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.+)$ $1.html [L]
