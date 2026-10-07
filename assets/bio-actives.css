@@ -160,7 +160,7 @@
 .ba-category p { color: var(--body); font-size: 15px }
 
 /* --- value-chain steps -------------------------------------------------- */
-.ba-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px }
+.ba-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px }
 .ba-step { background: var(--paper); border-radius: 20px; overflow: hidden; border: 1px solid var(--line) }
 .ba-section.forest .ba-step { background: #ffffff0f; border-color: #ffffff24 }
 .ba-section.forest .ba-step p { color: #c7d6ba }
