@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/", "destination": "/bio-actives.html" },
+    { "source": "/bio-actives", "destination": "/bio-actives.html" },
+    { "source": "/bio-actives/", "destination": "/bio-actives.html" },
+    { "source": "/bio-actives/food", "destination": "/bio-actives/food.html" },
+    { "source": "/bio-actives/aquaculture-agriculture-feed", "destination": "/bio-actives/aquaculture-agriculture-feed.html" }
+  ]
+}
